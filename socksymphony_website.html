@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SockSymphony Store</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0a; color: #f0ede6; font-family: 'Georgia', serif; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.2rem 3rem;
+    background: rgba(10,10,10,0.92);
+    border-bottom: 0.5px solid rgba(240,237,230,0.12);
+    backdrop-filter: blur(8px);
+  }
+  .nav-logo { display: flex; align-items: center; gap: 12px; }
+  .nav-logo svg { width: 36px; height: 36px; }
+  .nav-brand { font-size: 13px; letter-spacing: 0.22em; color: #c8c0b0; text-transform: uppercase; }
+  .nav-links { display: flex; gap: 2.5rem; }
+  .nav-links a { color: #8a8070; font-family: 'Georgia', serif; font-size: 13px; letter-spacing: 0.1em; text-decoration: none; transition: color 0.3s; }
+  .nav-links a:hover { color: #f0ede6; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    text-align: center; padding: 6rem 2rem 4rem;
+    position: relative; overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 60%, rgba(200,192,176,0.06) 0%, transparent 70%);
+  }
+  .hero-logo { margin-bottom: 2.5rem; position: relative; }
+  .hero-logo svg { width: 120px; height: 120px; }
+  .hero-title {
+    font-size: clamp(3rem, 8vw, 7rem);
+    font-weight: 400; letter-spacing: 0.08em; line-height: 1;
+    color: #f0ede6; margin-bottom: 0.4rem;
+  }
+  .hero-subtitle-word {
+    font-size: clamp(1rem, 2vw, 1.4rem);
+    letter-spacing: 0.5em; color: #6a6050; text-transform: uppercase;
+    margin-bottom: 2.5rem;
+  }
+  .hero-tagline {
+    font-size: 1rem; color: #8a8070; letter-spacing: 0.05em;
+    max-width: 380px; line-height: 1.8; margin-bottom: 3rem;
+  }
+  .hero-cta {
+    display: inline-block; padding: 0.9rem 3rem;
+    border: 0.5px solid rgba(200,192,176,0.5); color: #c8c0b0;
+    font-family: 'Georgia', serif; font-size: 12px; letter-spacing: 0.25em;
+    text-transform: uppercase; text-decoration: none;
+    transition: all 0.4s;
+    cursor: pointer; background: transparent;
+  }
+  .hero-cta:hover { background: rgba(200,192,176,0.08); border-color: #c8c0b0; color: #f0ede6; }
+  .scroll-hint {
+    position: absolute; bottom: 2.5rem;
+    font-size: 11px; letter-spacing: 0.3em; color: #4a4030;
+    text-transform: uppercase;
+    animation: fadeUpDown 2s ease-in-out infinite;
+  }
+  @keyframes fadeUpDown { 0%,100%{transform:translateY(0);opacity:0.4} 50%{transform:translateY(-4px);opacity:1} }
+
+  /* SECTION BASE */
+  section { padding: 7rem 3rem; }
+  .section-label {
+    font-size: 11px; letter-spacing: 0.35em; color: #5a5040;
+    text-transform: uppercase; margin-bottom: 1rem;
+  }
+  .section-title {
+    font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 400;
+    color: #e8e0d0; letter-spacing: 0.05em; margin-bottom: 3.5rem;
+  }
+
+  /* CATALOG */
+  .catalog { background: #0d0d0d; }
+  .catalog-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2px; max-width: 1100px; margin: 0 auto;
+  }
+  .product-card {
+    background: #111; padding: 2.5rem 2rem;
+    border: 0.5px solid rgba(200,192,176,0.07);
+    transition: border-color 0.4s, background 0.4s;
+    cursor: pointer;
+  }
+  .product-card:hover { background: #161410; border-color: rgba(200,192,176,0.22); }
+  .product-icon {
+    width: 80px; height: 50px; margin-bottom: 1.8rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .product-name {
+    font-size: 1.05rem; letter-spacing: 0.08em; color: #d8d0c0;
+    margin-bottom: 0.5rem;
+  }
+  .product-desc { font-size: 12px; color: #5a5040; line-height: 1.7; margin-bottom: 1.5rem; }
+  .product-price { font-size: 1.1rem; color: #a09080; letter-spacing: 0.05em; }
+  .product-badge {
+    display: inline-block; margin-bottom: 1rem;
+    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    padding: 3px 10px; border: 0.5px solid rgba(200,192,176,0.25);
+    color: #8a8070;
+  }
+
+  /* GALLERY */
+  .gallery { background: #0a0a0a; }
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 240px 240px;
+    gap: 2px; max-width: 1100px; margin: 0 auto;
+  }
+  .gallery-item {
+    background: #111;
+    border: 0.5px solid rgba(200,192,176,0.06);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; position: relative;
+    transition: border-color 0.3s;
+  }
+  .gallery-item:hover { border-color: rgba(200,192,176,0.2); }
+  .gallery-item.large { grid-row: span 2; }
+  .gallery-placeholder {
+    display: flex; flex-direction: column; align-items: center; gap: 1rem;
+    color: #3a3028;
+  }
+  .gallery-placeholder svg { width: 40px; height: 40px; }
+  .gallery-placeholder span { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; }
+
+  /* ORDER */
+  .order { background: #0d0d0d; max-width: 700px; margin: 0 auto; }
+  .order-form { display: flex; flex-direction: column; gap: 1.2rem; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+  .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+  .form-group label { font-size: 11px; letter-spacing: 0.25em; color: #5a5040; text-transform: uppercase; }
+  .form-group input, .form-group select, .form-group textarea {
+    background: #111; border: 0.5px solid rgba(200,192,176,0.15);
+    color: #d0c8b8; font-family: 'Georgia', serif; font-size: 14px;
+    padding: 0.85rem 1rem; outline: none;
+    transition: border-color 0.3s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: rgba(200,192,176,0.4);
+  }
+  .form-group select option { background: #111; }
+  .form-group textarea { resize: vertical; min-height: 90px; }
+  .submit-btn {
+    padding: 1rem; background: transparent;
+    border: 0.5px solid rgba(200,192,176,0.4); color: #c8c0b0;
+    font-family: 'Georgia', serif; font-size: 12px; letter-spacing: 0.3em;
+    text-transform: uppercase; cursor: pointer; transition: all 0.4s; margin-top: 0.5rem;
+  }
+  .submit-btn:hover { background: rgba(200,192,176,0.06); border-color: #c8c0b0; color: #f0ede6; }
+
+  /* CONTACTS */
+  .contacts { background: #0a0a0a; text-align: center; }
+  .contacts-inner { max-width: 600px; margin: 0 auto; }
+  .contact-divider { width: 40px; height: 0.5px; background: rgba(200,192,176,0.2); margin: 2rem auto; }
+  .contact-ig-link {
+    display: inline-flex; align-items: center; gap: 1rem;
+    border: 0.5px solid rgba(200,192,176,0.2);
+    padding: 1.2rem 2.5rem; text-decoration: none; color: #c8c0b0;
+    transition: all 0.4s; margin-top: 1.5rem;
+  }
+  .contact-ig-link:hover { background: rgba(200,192,176,0.05); border-color: rgba(200,192,176,0.5); color: #f0ede6; }
+  .contact-ig-link svg { width: 20px; height: 20px; }
+  .contact-ig-text { font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; }
+  .contact-note { font-size: 12px; color: #4a4030; margin-top: 2rem; line-height: 1.8; }
+
+  /* FOOTER */
+  footer {
+    border-top: 0.5px solid rgba(200,192,176,0.1);
+    padding: 2rem 3rem;
+    display: flex; justify-content: space-between; align-items: center;
+    background: #0a0a0a;
+  }
+  footer p { font-size: 11px; color: #3a3028; letter-spacing: 0.15em; }
+
+  /* SMOOTH SCROLL */
+  html { scroll-behavior: smooth; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M30 20 Q50 10 70 20 Q80 50 70 80 Q50 90 30 80 Q20 50 30 20Z" stroke="#c8c0b0" stroke-width="2.5" fill="none"/>
+      <path d="M45 20 Q55 40 50 60 Q45 75 35 80" stroke="#c8c0b0" stroke-width="2" fill="none"/>
+    </svg>
+    <span class="nav-brand">SockSymphony</span>
+  </div>
+  <div class="nav-links">
+    <a href="#catalog">Catalog</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#order">Order</a>
+    <a href="#contacts">Contacts</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-logo">
+    <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M100 20 C130 20, 170 50, 170 100 C170 150, 130 180, 100 180 C70 180, 30 150, 30 100 C30 50, 70 20, 100 20Z" stroke="rgba(200,192,176,0.15)" stroke-width="1" fill="none"/>
+      <path d="M60 60 C80 40, 120 40, 140 60 C160 80, 160 120, 140 140" stroke="#c8c0b0" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <path d="M60 140 C80 160, 120 160, 140 140" stroke="#c8c0b0" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <path d="M140 60 C160 40, 160 60, 140 80" stroke="#6a6050" stroke-width="2" fill="none"/>
+      <circle cx="100" cy="100" r="8" stroke="#c8c0b0" stroke-width="1.5" fill="none"/>
+    </svg>
+  </div>
+  <p class="hero-subtitle-word">Store</p>
+  <h1 class="hero-title">SockSymphony</h1>
+  <p class="hero-tagline">Every step, elevated. Premium socks crafted for those who notice the details.</p>
+  <a href="#catalog" class="hero-cta">Explore Collection</a>
+  <div class="scroll-hint">scroll</div>
+</section>
+
+<!-- CATALOG -->
+<section class="catalog" id="catalog">
+  <div style="max-width:1100px;margin:0 auto;">
+    <p class="section-label">Collection</p>
+    <h2 class="section-title">Our Catalog</h2>
+    <div class="catalog-grid">
+
+      <div class="product-card">
+        <div class="product-badge">Bestseller</div>
+        <div class="product-icon">
+          <svg viewBox="0 0 80 50" fill="none" xmlns="http://www.w3.org/2000/svg" width="80" height="50">
+            <path d="M10 40 Q15 15, 40 12 Q65 10, 72 30 Q76 42, 65 44 Q30 48, 10 40Z" stroke="#8a8070" stroke-width="1.5" fill="rgba(138,128,112,0.08)"/>
+            <path d="M10 40 Q8 32, 12 25" stroke="#8a8070" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <p class="product-name">Classic Black</p>
+        <p class="product-desc">Timeless cotton blend. Comfortable for all-day wear. Available in multiple lengths.</p>
+        <p class="product-price">₸ 1 490</p>
+      </div>
+
+      <div class="product-card">
+        <div class="product-badge">New</div>
+        <div class="product-icon">
+          <svg viewBox="0 0 80 50" fill="none" xmlns="http://www.w3.org/2000/svg" width="80" height="50">
+            <path d="M10 40 Q15 15, 40 12 Q65 10, 72 30 Q76 42, 65 44 Q30 48, 10 40Z" stroke="#6a8090" stroke-width="1.5" fill="rgba(106,128,144,0.08)"/>
+            <line x1="20" y1="32" x2="62" y2="28" stroke="#6a8090" stroke-width="1" stroke-dasharray="4 3"/>
+            <line x1="18" y1="37" x2="60" y2="34" stroke="#6a8090" stroke-width="1" stroke-dasharray="4 3"/>
+          </svg>
+        </div>
+        <p class="product-name">Stripe Series</p>
+        <p class="product-desc">Minimal horizontal stripes. Clean aesthetic meets everyday comfort.</p>
+        <p class="product-price">₸ 1 790</p>
+      </div>
+
+      <div class="product-card">
+        <div class="product-badge">Premium</div>
+        <div class="product-icon">
+          <svg viewBox="0 0 80 50" fill="none" xmlns="http://www.w3.org/2000/svg" width="80" height="50">
+            <path d="M10 40 Q15 15, 40 12 Q65 10, 72 30 Q76 42, 65 44 Q30 48, 10 40Z" stroke="#907060" stroke-width="1.5" fill="rgba(144,112,96,0.08)"/>
+            <path d="M25 35 Q35 25, 45 32 Q55 20, 62 28" stroke="#907060" stroke-width="1.2" fill="none"/>
+          </svg>
+        </div>
+        <p class="product-name">Merino Wool</p>
+        <p class="product-desc">100% merino wool. Naturally temperature-regulating. Luxury for your feet.</p>
+        <p class="product-price">₸ 3 200</p>
+      </div>
+
+      <div class="product-card">
+        <div class="product-icon">
+          <svg viewBox="0 0 80 50" fill="none" xmlns="http://www.w3.org/2000/svg" width="80" height="50">
+            <path d="M10 40 Q15 15, 40 12 Q65 10, 72 30 Q76 42, 65 44 Q30 48, 10 40Z" stroke="#6a7060" stroke-width="1.5" fill="rgba(106,112,96,0.08)"/>
+            <circle cx="30" cy="28" r="4" stroke="#6a7060" stroke-width="1"/>
+            <circle cx="45" cy="24" r="4" stroke="#6a7060" stroke-width="1"/>
+            <circle cx="58" cy="28" r="4" stroke="#6a7060" stroke-width="1"/>
+          </svg>
+        </div>
+        <p class="product-name">Polka Dot</p>
+        <p class="product-desc">Subtle pattern. Makes a quiet statement. Perfect for the detail-obsessed.</p>
+        <p class="product-price">₸ 1 990</p>
+      </div>
+
+      <div class="product-card">
+        <div class="product-icon">
+          <svg viewBox="0 0 80 50" fill="none" xmlns="http://www.w3.org/2000/svg" width="80" height="50">
+            <path d="M10 40 Q15 15, 40 12 Q65 10, 72 30 Q76 42, 65 44 Q30 48, 10 40Z" stroke="#807080" stroke-width="1.5" fill="rgba(128,112,128,0.08)"/>
+            <path d="M20 38 L35 20 L45 32 L55 18 L68 30" stroke="#807080" stroke-width="1.2" fill="none" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <p class="product-name">Geometric</p>
+        <p class="product-desc">Bold angular patterns. For those who wear their aesthetic on their sleeve — or ankle.</p>
+        <p class="product-price">₸ 2 290</p>
+      </div>
+
+      <div class="product-card">
+        <div class="product-badge">Set</div>
+        <div class="product-icon">
+          <svg viewBox="0 0 80 50" fill="none" xmlns="http://www.w3.org/2000/svg" width="80" height="50">
+            <path d="M8 38 Q12 16, 36 13 Q56 11, 62 28 Q64 38, 55 41 Q28 45, 8 38Z" stroke="#8a8070" stroke-width="1" fill="rgba(138,128,112,0.05)"/>
+            <path d="M20 36 Q24 14, 48 11 Q68 9, 74 26 Q76 36, 67 39" stroke="#8a8070" stroke-width="1" fill="rgba(138,128,112,0.05)"/>
+          </svg>
+        </div>
+        <p class="product-name">Starter Pack</p>
+        <p class="product-desc">5 pairs curated for the week. Mix of classics and accents. Best value.</p>
+        <p class="product-price">₸ 6 990</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="gallery" id="gallery">
+  <div style="max-width:1100px;margin:0 auto;">
+    <p class="section-label">Lookbook</p>
+    <h2 class="section-title">Gallery</h2>
+    <div class="gallery-grid">
+      <div class="gallery-item large">
+        <div class="gallery-placeholder">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="4" width="32" height="32" rx="2" stroke="#3a3028" stroke-width="1"/>
+            <circle cx="14" cy="14" r="4" stroke="#3a3028" stroke-width="1"/>
+            <path d="M4 26 L12 18 L20 24 L28 14 L36 22" stroke="#3a3028" stroke-width="1" fill="none"/>
+          </svg>
+          <span>Add your photo</span>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-placeholder">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32">
+            <rect x="4" y="4" width="32" height="32" rx="2" stroke="#3a3028" stroke-width="1"/>
+            <circle cx="14" cy="14" r="4" stroke="#3a3028" stroke-width="1"/>
+            <path d="M4 26 L12 18 L20 24 L28 14 L36 22" stroke="#3a3028" stroke-width="1" fill="none"/>
+          </svg>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-placeholder">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32">
+            <rect x="4" y="4" width="32" height="32" rx="2" stroke="#3a3028" stroke-width="1"/>
+            <circle cx="14" cy="14" r="4" stroke="#3a3028" stroke-width="1"/>
+            <path d="M4 26 L12 18 L20 24 L28 14 L36 22" stroke="#3a3028" stroke-width="1" fill="none"/>
+          </svg>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-placeholder">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32">
+            <rect x="4" y="4" width="32" height="32" rx="2" stroke="#3a3028" stroke-width="1"/>
+            <circle cx="14" cy="14" r="4" stroke="#3a3028" stroke-width="1"/>
+            <path d="M4 26 L12 18 L20 24 L28 14 L36 22" stroke="#3a3028" stroke-width="1" fill="none"/>
+          </svg>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-placeholder">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32">
+            <rect x="4" y="4" width="32" height="32" rx="2" stroke="#3a3028" stroke-width="1"/>
+            <circle cx="14" cy="14" r="4" stroke="#3a3028" stroke-width="1"/>
+            <path d="M4 26 L12 18 L20 24 L28 14 L36 22" stroke="#3a3028" stroke-width="1" fill="none"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ORDER -->
+<section style="padding: 7rem 3rem; background: #0d0d0d;" id="order">
+  <div style="max-width:660px;margin:0 auto;">
+    <p class="section-label">Place an Order</p>
+    <h2 class="section-title">Order</h2>
+    <div class="order-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" placeholder="Alikhan">
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" placeholder="Seitkali">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="tel" placeholder="+7 (___) ___-__-__">
+        </div>
+        <div class="form-group">
+          <label>City</label>
+          <input type="text" placeholder="Astana">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Product</label>
+        <select>
+          <option>Classic Black — ₸ 1 490</option>
+          <option>Stripe Series — ₸ 1 790</option>
+          <option>Merino Wool — ₸ 3 200</option>
+          <option>Polka Dot — ₸ 1 990</option>
+          <option>Geometric — ₸ 2 290</option>
+          <option>Starter Pack (5 pairs) — ₸ 6 990</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Size</label>
+          <select>
+            <option>36–38</option>
+            <option>39–41</option>
+            <option>42–44</option>
+            <option>45–46</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Quantity</label>
+          <input type="number" min="1" value="1">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Comment</label>
+        <textarea placeholder="Any specific requests or questions..."></textarea>
+      </div>
+      <button class="submit-btn">Send Order</button>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTS -->
+<section class="contacts" id="contacts">
+  <div class="contacts-inner">
+    <p class="section-label">Get in Touch</p>
+    <h2 class="section-title">Contacts</h2>
+    <p style="font-size:14px;color:#6a6050;line-height:1.9;max-width:420px;margin:0 auto;">
+      Follow us on Instagram for new drops, lookbook updates, and exclusive offers.
+      DMs are always open for questions and custom orders.
+    </p>
+    <div class="contact-divider"></div>
+    <a href="https://www.instagram.com/alemcreativeagency?igsh=cmZwbnRiZm93c3Nh&utm_source=qr" target="_blank" class="contact-ig-link">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>
+      </svg>
+      <span class="contact-ig-text">@SockSymphony</span>
+    </a>
+    <p class="contact-note">Based in Kazakhstan &nbsp;·&nbsp; Ships nationwide &nbsp;·&nbsp; Mon–Sat 10:00–20:00</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 SockSymphony Store</p>
+  <p>Every step, elevated.</p>
+</footer>
+
+</body>
+</html>
